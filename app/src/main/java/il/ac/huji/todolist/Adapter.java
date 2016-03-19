@@ -14,28 +14,39 @@ import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
-public class Adapter extends ArrayAdapter<String> {
+public class Adapter extends ArrayAdapter<ToDoItem> {
     private Context cnx;
-    private ArrayList<String> tasksTodo;
-    public Adapter(Context context, int resource, ArrayList<String> tasks){
+    private ArrayList<ToDoItem> tasksTodo;
+    //private ArrayList<Date> dueDatesArr;
+    public Adapter(Context context, int resource, ArrayList<ToDoItem> tasks){
         super(context, resource, tasks);
         cnx = context;
         tasksTodo = tasks;
+        //dueDatesArr = dueDates;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
         LayoutInflater inflater = LayoutInflater.from(cnx);
         convertView = inflater.inflate(R.layout.activity_adapter,parent,false);
-        TextView itmTxtView = (TextView) convertView.findViewById(R.id.label);
-        itmTxtView.setText(tasksTodo.get(position));
-        if(position % 2 == 0){
-            itmTxtView.setTextColor(Color.RED);
+        TextView txtTask = (TextView) convertView.findViewById(R.id.txtTodoTitle);
+        TextView dueDate = (TextView) convertView.findViewById(R.id.txtTodoDueDate);
+
+        ToDoItem curTask = tasksTodo.get(position);
+        txtTask.setText(curTask.getToDoTxt());
+        dueDate.setText(curTask.getDueDateStr());
+
+        if(curTask.isDueDatePassed()){
+            txtTask.setTextColor(Color.RED);
+            dueDate.setTextColor(Color.RED);
         }
         else{
-            itmTxtView.setTextColor(Color.BLUE);
+            txtTask.setTextColor(Color.BLACK);
+            dueDate.setTextColor(Color.BLACK);
         }
         return convertView;
     }
+
 }
