@@ -33,16 +33,13 @@ public class AddNewTodoItemActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int year = dueDate.getYear();
-                int month = dueDate.getMonth();//+1 maybe?
+                int month = dueDate.getMonth()+1;//+1 maybe?
                 int day = dueDate.getDayOfMonth();
                 final Calendar calendar = Calendar.getInstance();
                 calendar.set(year,month,day);
 
                 String newTaskTxt = newTask.getText().toString();
-               // System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 
-                //System.out.println("in ADD newTaskTxt: " + newTaskTxt);
-                //System.out.println("in ADD calendar: " + calendar.getTime().toString());
                 Intent result = new Intent();
                 result.putExtra("Task", newTaskTxt);
                 result.putExtra("Date", calendar.getTime());

@@ -1,9 +1,11 @@
 package il.ac.huji.todolist;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,20 +24,27 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class TodoListManagerActivity extends AppCompatActivity {
+    private DBHelper db;
 
     private Adapter adp;
     private ListView tasksListView;
     private ArrayList<ToDoItem> tasksLst;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list_manager);
+        db = new DBHelper(getApplicationContext());
         ToDoItem[] tasks = {};
-        tasksLst = new ArrayList<ToDoItem>(Arrays.asList(tasks));
-        adp = new Adapter(this, R.layout.activity_adapter, tasksLst);
+
+
         tasksListView = (ListView)findViewById(R.id.lstTodoItems);
-        tasksListView.setAdapter(adp);
         registerForContextMenu(tasksListView);
 
+        tasksLst = new ArrayList<ToDoItem>(Arrays.asList(tasks));
+        tasksLst = db.getAllTasks();
+
+        adp = new Adapter(this, R.layout.activity_adapter, tasksLst);
+        tasksListView.setAdapter(adp);
     }
 
     @Override
@@ -64,12 +73,13 @@ public class TodoListManagerActivity extends AppCompatActivity {
         switch(item.getItemId())
         {
             case R.id.menuItemDelete:
+                db.deleteTodoItem(curTask);
                 tasksLst.remove(curTask);
                 adp.notifyDataSetChanged();
                 break;
             //if it is a a call
             case 0:
-                System.out.println("***************: " + curTask.getCellNum());
+                //System.out.println("***************: " + curTask.getCellNum());
                 Intent intent = new Intent(Intent.ACTION_DIAL);
                 intent.setData(Uri.parse("tel: " + curTask.getCellNum()));
                 startActivity(intent);
@@ -110,7 +120,9 @@ public class TodoListManagerActivity extends AppCompatActivity {
             String taskToDoTxt = data.getExtras().getString("Task");
             Date date = (Date)data.getExtras().getSerializable("Date");
             ToDoItem newItem = new ToDoItem(taskToDoTxt, date);
+            db.insertNewTodo(newItem);
             adp.add(newItem);
+            adp.notifyDataSetChanged();
         }
     }
 }
